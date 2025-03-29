@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\InternIntellegence_Portfolio.props" />
+</Project>
