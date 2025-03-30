@@ -17,10 +17,6 @@ namespace InternIntellegence_Portfolio.Controllers
             _accountService = accountService;
         }
 
-        /// <summary>
-        /// Register a new user
-        /// </summary>
-        /// <param name="registerDto">User registration details</param>
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto registerDto)
@@ -56,10 +52,7 @@ namespace InternIntellegence_Portfolio.Controllers
             return BadRequest(result);
         }
 
-        /// <summary>
-        /// Login an existing user
-        /// </summary>
-        /// <param name="loginDto">User login credentials</param>
+        
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto loginDto)
@@ -78,7 +71,7 @@ namespace InternIntellegence_Portfolio.Controllers
             }
 
             var result = await _accountService.LoginAsync(loginDto);
-            if (result.Success)
+            if (result.Result.Succeeded)
             {
                 // Return successful login response with userId
                 return Ok(result);

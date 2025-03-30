@@ -76,6 +76,37 @@ namespace InternIntellegence_Portfolio.Migrations
                     b.ToTable("Contacts");
                 });
 
+            modelBuilder.Entity("InternIntellegence_Portfolio.Models.ContactForm", b =>
+                {
+                    b.Property<int>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("MessageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ContactForms");
+                });
+
             modelBuilder.Entity("InternIntellegence_Portfolio.Models.Projects", b =>
                 {
                     b.Property<int>("ProjectId")
@@ -351,7 +382,7 @@ namespace InternIntellegence_Portfolio.Migrations
             modelBuilder.Entity("InternIntellegence_Portfolio.Models.Achivements", b =>
                 {
                     b.HasOne("InternIntellegence_Portfolio.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Achivements")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -362,7 +393,7 @@ namespace InternIntellegence_Portfolio.Migrations
             modelBuilder.Entity("InternIntellegence_Portfolio.Models.Contact", b =>
                 {
                     b.HasOne("InternIntellegence_Portfolio.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Contacts")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -370,10 +401,21 @@ namespace InternIntellegence_Portfolio.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("InternIntellegence_Portfolio.Models.ContactForm", b =>
+                {
+                    b.HasOne("InternIntellegence_Portfolio.Models.ApplicationUser", "user")
+                        .WithMany("ContactForms")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
+                });
+
             modelBuilder.Entity("InternIntellegence_Portfolio.Models.Projects", b =>
                 {
                     b.HasOne("InternIntellegence_Portfolio.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Projects")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -384,7 +426,7 @@ namespace InternIntellegence_Portfolio.Migrations
             modelBuilder.Entity("InternIntellegence_Portfolio.Models.Skills", b =>
                 {
                     b.HasOne("InternIntellegence_Portfolio.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Skills")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -441,6 +483,19 @@ namespace InternIntellegence_Portfolio.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("InternIntellegence_Portfolio.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Achivements");
+
+                    b.Navigation("ContactForms");
+
+                    b.Navigation("Contacts");
+
+                    b.Navigation("Projects");
+
+                    b.Navigation("Skills");
                 });
 #pragma warning restore 612, 618
         }

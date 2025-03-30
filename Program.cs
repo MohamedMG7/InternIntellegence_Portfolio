@@ -5,6 +5,11 @@ using InternIntellegence_Portfolio.Models;
 using InternIntellegence_Portfolio.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using InternIntellegence_Portfolio.Dto;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace InternIntellegence_Portfolio
 {
@@ -20,6 +25,8 @@ namespace InternIntellegence_Portfolio
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
+
+			 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT")); 
 
 			builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => 
 			{
@@ -37,7 +44,24 @@ namespace InternIntellegence_Portfolio
 			.AddDefaultTokenProviders();
 
 			// Add Authentication
-			builder.Services.AddAuthentication();
+			builder.Services.AddAuthentication(Options => {
+				Options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				Options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			}).AddJwtBearer(o => {
+				o.RequireHttpsMetadata = false;
+				o.SaveToken = false;
+				o.TokenValidationParameters = new TokenValidationParameters{
+					ValidateIssuer = true,
+					ValidateIssuerSigningKey = true,
+					ValidateAudience = true,
+					ValidateLifetime = true,
+					ValidIssuer = builder.Configuration["JWT:Issuer"],
+					ValidAudience = builder.Configuration["JWT:Audiance"],
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+				};
+			});
+
+			builder.Services.AddAuthorization();
 
 			builder.Services.AddScoped<ValidationRepo>();
 			builder.Services.AddScoped<AccountManagementService>();
@@ -45,7 +69,7 @@ namespace InternIntellegence_Portfolio
 			builder.Services.AddScoped(typeof(IGenericRepo<>), typeof(GenericRepo<>)); // register all repos
 
 			builder.Services.AddDbContext<ApplicationContext>(options =>
-			options.UseSqlServer(builder.Configuration.GetConnectionString("HostingConnection")));
+			options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 			var app = builder.Build();
 
@@ -58,6 +82,7 @@ namespace InternIntellegence_Portfolio
 
 			app.UseHttpsRedirection();
 
+			app.UseAuthentication();
 			app.UseAuthorization();
 
 

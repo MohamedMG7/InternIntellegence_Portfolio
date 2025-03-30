@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using InternIntellegence_Portfolio.Services;
 using InternIntellegence_Portfolio.Dto;
 using InternIntellegence_Portfolio.DbHelper.Repos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InternIntellegence_Portfolio.Controllers
 {
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class PortfolioController : ControllerBase
@@ -150,6 +152,52 @@ namespace InternIntellegence_Portfolio.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { Message = "Failed to retrieve portfolio", Error = ex.Message });
+            }
+        }
+
+        [HttpPost("send-message")]
+        public IActionResult SendMessage([FromBody] MessageSendDto messageData)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _portfolioManagementService.SendMessage(messageData);
+                return Ok(new { Message = "Message sent successfully!" });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while sending the message", Error = ex.Message });
+            }
+        }
+
+        [HttpGet("messages")]
+        public IActionResult GetMessages([FromQuery]string userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return BadRequest(new { Message = "User ID is required." });
+                }
+
+                var messages = _portfolioManagementService.ShowMessages(userId);
+                return Ok(messages);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while retrieving messages", Error = ex.Message });
             }
         }
     }

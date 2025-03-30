@@ -1,6 +1,7 @@
 using InternIntellegence_Portfolio.Models;
 using InternIntellegence_Portfolio.Dto;
 using InternIntellegence_Portfolio.DbHelper.Repos;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternIntellegence_Portfolio.Services{
     public class ProtfolioManagementService{
@@ -9,17 +10,20 @@ namespace InternIntellegence_Portfolio.Services{
         private readonly IGenericRepo<Projects> _projectsRepo;
         private readonly IGenericRepo<Contact> _contactRepo;
         private readonly IGenericRepo<Skills> _skillsRepo;
+        private readonly IGenericRepo<ContactForm> _contactFormRepo;
 
         public ProtfolioManagementService(
             IGenericRepo<Achivements> achievementsRepo,
             IGenericRepo<Projects> projectsRepo,
             IGenericRepo<Contact> contactRepo,
-            IGenericRepo<Skills> skillsRepo)
+            IGenericRepo<Skills> skillsRepo,
+            IGenericRepo<ContactForm> contactFormRepo)
         {
             _achievementsRepo = achievementsRepo;
             _projectsRepo = projectsRepo;
             _contactRepo = contactRepo;
             _skillsRepo = skillsRepo;
+            _contactFormRepo = contactFormRepo;
         }
 
         private void AddAchievements(ICollection<AchivementDto> achievementDtos, string userId)
@@ -161,6 +165,36 @@ namespace InternIntellegence_Portfolio.Services{
             return portfolio;
         }
 
+        public void SendMessage(MessageSendDto MessageData) {
+            var Message = new ContactForm{
+                Email = MessageData.Email,
+                Name = MessageData.Name,
+                UserId = MessageData.UserId,
+                Message = MessageData.Message
+            };
+            _contactFormRepo.Add(Message);
+            _contactFormRepo.Save();
+        }
+
+        public List<MessageReadDto> ShowMessages(string userId){
+            if (string.IsNullOrEmpty(userId))
+                {
+                   throw new ArgumentException("User ID is required.");
+                }
+
+            var messages = _contactFormRepo.GetAll()
+                .Where(u => u.UserId == userId)
+                .AsNoTracking()
+                .OrderByDescending(m => m.MessageId) // Optional: Order by most recent
+                .Select(m => new MessageReadDto
+                {
+                    Name = m.Name,
+                    Email = m.Email,
+                    Message = m.Message,
+                }).ToList();
+
+                return messages;
+        }
         
     }
 }
