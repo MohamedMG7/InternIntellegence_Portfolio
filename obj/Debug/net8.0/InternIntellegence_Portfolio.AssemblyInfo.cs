@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InternIntellegence_Portfolio")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93d90178815b1ee1beac712c317b671f7d3d8724")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6beef6eaeaa5a6ce945af6cb7e39e51d60f33982")]
 [assembly: System.Reflection.AssemblyProductAttribute("InternIntellegence_Portfolio")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InternIntellegence_Portfolio")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
